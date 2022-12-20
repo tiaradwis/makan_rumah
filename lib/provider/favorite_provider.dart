@@ -15,8 +15,8 @@ class DbProvider extends ChangeNotifier {
   String _message = '';
   String get message => _message;
 
-  List<Restaurant> _resto = [];
-  List<Restaurant> get favorites => _resto;
+  List<RestaurantFavorite> _resto = [];
+  List<RestaurantFavorite> get favorites => _resto;
 
   void _getFavsResto() async {
     _resto = await databaseHelper.getFavorite();
@@ -29,10 +29,12 @@ class DbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFavsResto(Restaurant restaurant) async {
+  void addFavsResto(RestaurantFavorite restaurant) async {
     try {
+      print("method addfavsresto started");
       await databaseHelper.addFavorite(restaurant);
       _getFavsResto();
+      print("method addfavsresto done");
     } catch (e) {
       _state = ResultState.error;
       _message = 'Error add: $e';

@@ -35,6 +35,7 @@ class FavoritePage extends StatelessWidget {
     return Consumer<DbProvider>(builder: (context, provider, child) {
       if (provider.state == ResultState.hasData) {
         return ListView.builder(
+          shrinkWrap: true,
           itemCount: provider.favorites.length,
           itemBuilder: (context, index) {
             return _restaurantItem(context, provider.favorites[index]);
@@ -63,7 +64,7 @@ class FavoritePage extends StatelessWidget {
     });
   }
 
-  Widget _restaurantItem(BuildContext context, Restaurant restaurant) {
+  Widget _restaurantItem(BuildContext context, RestaurantFavorite restaurant) {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, RestaurantDetailPage.routeName,

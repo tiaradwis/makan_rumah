@@ -8,9 +8,10 @@ import 'package:app_restaurant/ui/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_restaurant/provider/favorite_provider.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() {
+  tz.initializeTimeZones();
   runApp(const MyApp());
 }
 

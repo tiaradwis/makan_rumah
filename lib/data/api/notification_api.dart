@@ -1,14 +1,13 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
 class NotificationApi {
   static final _notifications = FlutterLocalNotificationsPlugin();
   static final onNotification = BehaviorSubject<String?>();
 
   static Future _notificationDetails() async {
+    print("notification details");
     return NotificationDetails(
       android: AndroidNotificationDetails(
         'channel id',
@@ -38,20 +37,22 @@ class NotificationApi {
     String? body,
     String? payload,
     required DateTime scheduledDate,
-  }) async =>
-      _notifications.zonedSchedule(
-        id,
-        title,
-        body,
-        _scheduleDaily(Time(11)),
-        await _notificationDetails(),
-        payload: payload,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time,
-      );
+  }) async {
+    await _notifications.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(scheduledDate, tz.local),
+      await _notificationDetails(),
+      payload: payload,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
 
+  //method ini tidak dipanggil boleh dihapus/tidak
   static tz.TZDateTime _scheduleDaily(Time time) {
     final now = tz.TZDateTime.now(tz.local);
     final scheduledDate = tz.TZDateTime(

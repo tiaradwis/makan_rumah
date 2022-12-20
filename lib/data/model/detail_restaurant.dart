@@ -86,6 +86,46 @@ class Restaurant {
       };
 }
 
+class RestaurantFavorite {
+  String? id;
+  String? name;
+  String? description;
+  String? city;
+  String? address;
+  String? pictureId;
+  double? rating;
+
+  RestaurantFavorite({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.city,
+    required this.address,
+    required this.pictureId,
+    required this.rating,
+  });
+
+  factory RestaurantFavorite.fromJson(Map<String, dynamic> json) => RestaurantFavorite(
+        id: json["id"],
+        name: json["name"],
+        description: json["description"],
+        city: json["city"],
+        address: json["address"],
+        pictureId: json["pictureId"],
+        rating: json["rating"].toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "description": description,
+        "city": city,
+        "address": address,
+        "pictureId": pictureId,
+        "rating": rating,
+      };
+}
+
 class Category {
   Category({
     required this.name,

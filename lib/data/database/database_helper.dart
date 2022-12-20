@@ -15,23 +15,33 @@ class DatabaseHelper {
 
   Future<Database> _initializeDb() async {
     var path = await getDatabasesPath();
+
     var db = openDatabase(
       '$path/$_tabelFavorite',
+      version: 1,
       onCreate: (db, version) async {
-        await db.execute(
-            '''CREATE TABLE $_tabelFavorite (id TEXT PRIMARY KEY, name TEXT, description TEXT, pictureId TEXT, city TEXT, rating REAL
-        )''');
+        await db.execute('''
+            CREATE TABLE $_tabelFavorite (
+              id TEXT PRIMARY KEY, 
+              name TEXT, 
+              description TEXT, 
+              city TEXT, 
+              address TEXT, 
+              pictureId TEXT, 
+              rating REAL
+            );
+        ''');
       },
     );
     return db;
   }
 
   Future<Database?> get database async {
-    _database ??= await _initializeDb();
+    _database = await _initializeDb();
     return _database;
   }
 
-  Future<void> addFavorite(Restaurant restaurant) async {
+  Future<void> addFavorite(RestaurantFavorite restaurant) async {
     final db = await database;
     await db?.insert(_tabelFavorite, restaurant.toJson());
   }
@@ -41,11 +51,11 @@ class DatabaseHelper {
     await db?.delete(_tabelFavorite, where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<List<Restaurant>> getFavorite() async {
+  Future<List<RestaurantFavorite>> getFavorite() async {
     final db = await database;
     List<Map<String, dynamic>> result = await db!.query(_tabelFavorite);
 
-    return result.map((e) => Restaurant.fromJson(e)).toList();
+    return result.map((e) => RestaurantFavorite.fromJson(e)).toList();
   }
 
   Future<Map> getFavoriteById(String id) async {

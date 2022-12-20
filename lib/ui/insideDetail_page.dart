@@ -55,7 +55,14 @@ class InsideDetailPage extends StatelessWidget {
                         )
                       : IconButton(
                           onPressed: () {
-                            provider.addFavsResto(restaurantDetail);
+                            provider.addFavsResto(RestaurantFavorite(
+                                id: restaurantDetail.id,
+                                name: restaurantDetail.name,
+                                description: restaurantDetail.description,
+                                pictureId: restaurantDetail.pictureId,
+                                city: restaurantDetail.city,
+                                address: restaurantDetail.city,
+                                rating: restaurantDetail.rating));
                           },
                           icon: Icon(Icons.favorite_outline));
                 },
