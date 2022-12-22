@@ -1,7 +1,12 @@
-import 'package:app_restaurant/data/api/notification_api.dart';
+import 'dart:io';
+
+import 'package:app_restaurant/provider/preferences_provider.dart';
+import 'package:app_restaurant/provider/scheduling_provider.dart';
 import 'package:app_restaurant/ui/favorite_page.dart';
 import 'package:app_restaurant/ui/search_page.dart';
+import 'package:app_restaurant/widgets/custom_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   static const routeName = "/setting";
@@ -17,12 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    NotificationApi.init(initScheduled: true);
-    listenNotification();
   }
-
-  void listenNotification() =>
-      NotificationApi.onNotification.stream.listen(onClickedNotification);
 
   onClickedNotification(String? payload) => Navigator.of(context).push(
         MaterialPageRoute(
@@ -91,34 +91,71 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   Column(
                     children: [
-                      Switch(
-                        value: value,
-                        onChanged: (bool v) {
-                          setState(() {
-                            value = v;
-                          });
-                          if (v) {
-                            NotificationApi.showScheduledNotification(
-                                scheduledDate: DateTime.now()
-                                    .add(const Duration(seconds: 12)),
-                                title: 'Its time to luch!',
-                                body:
-                                    'I think you might like this! Only for you discount up to 30%',
-                                payload: "payload");
-                            const snackBar = SnackBar(
-                              content: Text(
-                                "You activated notification!",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              backgroundColor: Colors.green,
+                      Consumer<PreferencesProvider>(
+                        builder: (context, provider, child) {
+                          return Consumer<SchedulingProvider>(
+                              builder: (context, scheduled, _) {
+                            return Switch.adaptive(
+                              value: provider.isDailyRestaurantsActive,
+                              onChanged: (value) async {
+                                if (Platform.isIOS) {
+                                  customDialog(context);
+                                } else {
+                                  scheduled.scheduledRestaurant(value);
+                                  provider.enableDailyRestaurants(value);
+                                  late String text;
+                                  late MaterialColor color;
+                                  if (value == false) {
+                                    text = "You deactivated notification!";
+                                    color = Colors.red;
+                                  } else {
+                                    text = "You activated notification!";
+                                    color = Colors.green;
+                                  }
+                                  final snackBar = SnackBar(
+                                    content: Text(
+                                      text,
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    backgroundColor: color,
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                    ..removeCurrentSnackBar()
+                                    ..showSnackBar(snackBar);
+                                }
+                              },
                             );
-                            ScaffoldMessenger.of(context)
-                              ..removeCurrentSnackBar()
-                              ..showSnackBar(snackBar);
-                          } else {}
+                          });
                         },
-                        activeColor: Colors.green,
-                      ),
+                      )
+                      // Switch(
+                      //   value: value,
+                      //   onChanged: (bool v) {
+                      //     setState(() {
+                      //       value = v;
+                      //     });
+                      //     if (v) {
+                      //       NotificationApi.showScheduledNotification(
+                      //           scheduledDate: DateTime.now()
+                      //               .add(const Duration(seconds: 12)),
+                      //           title: 'Its time to luch!',
+                      //           body:
+                      //               'I think you might like this! Only for you discount up to 30%',
+                      //           payload: "payload");
+                      //       const snackBar = SnackBar(
+                      //         content: Text(
+                      //           "You activated notification!",
+                      //           style: TextStyle(fontSize: 16),
+                      //         ),
+                      //         backgroundColor: Colors.green,
+                      //       );
+                      //       ScaffoldMessenger.of(context)
+                      //         ..removeCurrentSnackBar()
+                      //         ..showSnackBar(snackBar);
+                      //     } else {}
+                      //   },
+                      //   activeColor: Colors.green,
+                      // ),
                     ],
                   )
                 ],

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class DbProvider extends ChangeNotifier {
   final DatabaseHelper databaseHelper;
+
   DbProvider({required this.databaseHelper}) {
     _getFavsResto();
   }
@@ -19,10 +20,12 @@ class DbProvider extends ChangeNotifier {
   List<RestaurantFavorite> get favorites => _resto;
 
   void _getFavsResto() async {
+    _state = ResultState.loading;
     _resto = await databaseHelper.getFavorite();
     if (_resto.length > 0) {
       _state = ResultState.hasData;
     } else {
+      print("data kosong");
       _state = ResultState.noData;
       _message = 'Daftar favorite masih kosong';
     }
